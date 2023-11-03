@@ -8,7 +8,7 @@
 	- I used seed=5 always
 - plots_and_tableentries: Contains the files I used to plot training data (plot_training.py) and compute the mean return values etc. that I have in my tables (results_table.py)
 	- Very manual usage, changed which function to run by hand each time because I did this at the end and there was little time
-        - Requires a slight change in stable-baselines3 package code to work  	
+    - Requires a slight change in stable-baselines3 package code to work  	
 	- Uses most of stable-baselines3 stuff
 - procgen_games: Contains all procgen game files I used for the super-tasks and sub-tasks with my modifications
 - test_merge.py: Used this to confirm that my merging functions are functioning correctly, it is a bit messy right now and a lot of things are commented out. I also did other things to verify correct merging.

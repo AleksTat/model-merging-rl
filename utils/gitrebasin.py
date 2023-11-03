@@ -2,10 +2,6 @@
 Almost all of the code is taken from https://github.com/themrzmaster/git-re-basin-pytorch
 Important modification is in lines 56-59
 """
-
-
-
-
 import copy
 import torch
 from collections import defaultdict

@@ -79,7 +79,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, required=True, help='location of the monitor files (must be in same dir)')
     parser.add_argument('--output_file', type=str, required=True, help='path/name of the output file to write the results in')
-    parser.add_argument('--type', default='return', type=str, required=True, choices=['return', 'length'], help='specifies whether to write episode returns or episode lengths')
+    parser.add_argument('--type', default='return', type=str, choices=['return', 'length'], help='specifies whether to write episode returns or episode lengths')
     return parser.parse_args()
 
 

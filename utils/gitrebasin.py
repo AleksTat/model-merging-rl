@@ -8,9 +8,11 @@ from collections import defaultdict
 from typing import NamedTuple
 from scipy.optimize import linear_sum_assignment
 
+
 class PermutationSpec(NamedTuple):
   perm_to_axes: dict
   axes_to_perm: dict
+
 
 def permutation_spec_from_axes_to_perm(axes_to_perm: dict) -> PermutationSpec:
   perm_to_axes = defaultdict(list)
@@ -19,6 +21,7 @@ def permutation_spec_from_axes_to_perm(axes_to_perm: dict) -> PermutationSpec:
       if perm is not None:
         perm_to_axes[perm].append((wk, axis))
   return PermutationSpec(perm_to_axes=dict(perm_to_axes), axes_to_perm=axes_to_perm)
+
 
 def naturecnn_permutation_spec() -> PermutationSpec:
     conv = lambda name, p_in, p_out: {f"{name}.weight": (p_out, p_in, None, None), f"{name}.bias": (p_out, None)}
@@ -35,6 +38,7 @@ def naturecnn_permutation_spec() -> PermutationSpec:
     'features_extractor.linear.0.bias': ('P_bg0_linear',), 
     'action_net.weight': (None, 'P_bg0_linear'),
     'action_net.bias': (None, )})
+
 
 def get_permuted_param(ps: PermutationSpec, perm, k: str, params, except_axis=None):
   """Get parameter `k` from `params`, with the permutations applied."""
@@ -58,9 +62,11 @@ def get_permuted_param(ps: PermutationSpec, perm, k: str, params, except_axis=No
 
   return w
 
+
 def apply_permutation(ps: PermutationSpec, perm, params):
   """Apply a `perm` to `params`."""
   return {k: get_permuted_param(ps, perm, k, params) for k in params.keys()}
+
 
 def weight_matching(ps: PermutationSpec, params_a, params_b, max_iter=100, init_perm=None):
   """Find a permutation of `params_b` to make them match `params_a`."""

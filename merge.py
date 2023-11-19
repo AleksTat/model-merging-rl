@@ -2,14 +2,6 @@ import argparse
 from stable_baselines3 import PPO
 from utils.gitrebasin import naturecnn_permutation_spec, apply_permutation, weight_matching
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--model_a', type=str, required=True)
-    parser.add_argument('--model_b', type=str, required=True)
-    parser.add_argument('--procedure', type=str, required=True)
-    parser.add_argument('--save_path', type=str, required=True)
-    parser.add_argument('--inter_param', type=float, required=True)
-    return parser.parse_args()
 
 def weight_averaging(params_a, params_b, inter_param):
     # Get the initial weights from both models
@@ -31,6 +23,7 @@ def weight_averaging(params_a, params_b, inter_param):
     print("models averaged, inter_param:", inter_param)
     return averaged_state_dict
 
+
 def gitrebasin(params_a, params_b, inter_param):
     permutation_spec = naturecnn_permutation_spec()
     final_permutation = weight_matching(permutation_spec,
@@ -48,6 +41,17 @@ def gitrebasin(params_a, params_b, inter_param):
     updated_params = weight_averaging(params_a, updated_params, inter_param)
     return updated_params
 
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_a', type=str, required=True)
+    parser.add_argument('--model_b', type=str, required=True)
+    parser.add_argument('--procedure', type=str, required=True, choices=['avg', 'gitrebasin'], help='specifies merging procedure to merge models a and b')
+    parser.add_argument('--save_path', type=str, required=True, help='save location for merged model')
+    parser.add_argument('--inter_param', type=float, required=True, help='interpolation parameter (alpha) used in the averaging process')
+    return parser.parse_args()
+
+
 def main():
     args = parse_args()
     print('loading model_a:', args.model_a)
@@ -61,20 +65,17 @@ def main():
     params_a = model_a.policy.state_dict()
     params_b = model_b.policy.state_dict()
 
-    assert(
-        args.procedure == 'avg' or args.procedure == 'gitrebasin'
-        ),    f"procedure must be 'avg' or 'gitrebasin', got: {args.procedure}"
-
     updated_params = {}
 
     if args.procedure == 'avg':
         updated_params = weight_averaging(params_a, params_b, args.inter_param)
-    elif args.procedure == 'gitrebasin':
+    else:
         updated_params = gitrebasin(params_a, params_b, args.inter_param)
 
     model_b.policy.load_state_dict(updated_params)
-    print('saving model to', args.save_path)
+    print('saving model to:', args.save_path)
     model_b.save(args.save_path)
+
 
 if __name__ == '__main__':
     main()

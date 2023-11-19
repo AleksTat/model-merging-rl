@@ -1,7 +1,10 @@
+# FILE NOT FINISHED
+
 import argparse
 from stable_baselines3 import PPO
 from merge import weight_averaging, gitrebasin
 import torch
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -9,6 +12,7 @@ def parse_args():
     parser.add_argument('--model_b', type=str, required=True)
     parser.add_argument('--procedure', type=str, required=True)
     return parser.parse_args()
+
 
 def noway():
     model = PPO.load("/home/beksi/projects/thesis/models/starpilot/starpilot_init0_env0.zip")
@@ -69,8 +73,10 @@ def test_weight_averaging(params_a, inter_param=0.3):
 
     return True
 
+
 def test_gitrebasin(params_a, params_b):
     pass
+
 
 def test_random(params_a, params_b):
     keys1 = set(params_a.keys())
@@ -87,6 +93,7 @@ def test_random(params_a, params_b):
         if not torch.equal(tensor1, tensor2):
             return False
     return True
+
 
 def main():
     args = parse_args()
@@ -113,6 +120,7 @@ def main():
             print("Weight averaging does not work correctly")
     elif args.procedure == 'gitrebasin':
         test_gitrebasin(params_a)"""
+
 
 if __name__ == '__main__':
     main()

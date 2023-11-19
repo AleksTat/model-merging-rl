@@ -8,14 +8,16 @@ from stable_baselines3.common.vec_env import (
 )
 from stable_baselines3.common.utils import set_random_seed
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', type=str, required=True)
-    parser.add_argument('--seed_init', type=int, required=True)
-    parser.add_argument('--seed_env', type=int, required=True)
-    parser.add_argument('--model_path', type=str, required=True)
-    parser.add_argument('--monitor_path', type=str, required=True)
+    parser.add_argument('--seed_init', type=int, required=True, help='seed for model weight initialization')
+    parser.add_argument('--seed_env', type=int, required=True, help='seed for environment level generation')
+    parser.add_argument('--model_path', type=str, required=True, help='save location for model after training')
+    parser.add_argument('--monitor_path', type=str, required=True, help='save location for training data')
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
@@ -25,12 +27,13 @@ def main():
     print('seed_env:', args.seed_env)
     print('model_path:', args.model_path)
     print('monitor_path:', args.monitor_path)
+    
     set_random_seed(args.seed_init, using_cuda=True)
     
     # use same schema for logs and model save directory
-   # monitor_path = './monitor/train/'+args.env+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
+    # monitor_path = './monitor/train/'+args.env+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
+    # model_path = './models/'+str(args.env)+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
     tb_path= './tensorboard/'+str(args.env)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
-   # model_path = './models/'+str(args.env)+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
     model_path = args.model_path
     monitor_path = args.monitor_path
 
@@ -53,6 +56,7 @@ def main():
     #print(model.policy)
     model.learn(total_timesteps=25_000_000)
     model.save(model_path)
+
 
 if __name__ == '__main__':
     main()

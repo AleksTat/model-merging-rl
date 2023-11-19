@@ -1,14 +1,14 @@
+import argparse
 from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-
 # import matplotlib
 # matplotlib.use('TkAgg')  # Can change to 'Agg' for non-interactive mode
 from matplotlib import pyplot as plt
-
-from stable_baselines3.common.monitor import load_results
+from utils.monitor import load_results
 from scipy.ndimage import gaussian_filter1d
+
 
 X_TIMESTEPS = "timesteps"
 X_EPISODES = "episodes"
@@ -54,7 +54,7 @@ def ts2xy(data_frame: pd.DataFrame, x_axis: str) -> Tuple[np.ndarray, np.ndarray
         (can be X_TIMESTEPS='timesteps', X_EPISODES='episodes' or X_WALLTIME='walltime_hrs')
     :return: the x and y output
     """
-    print(x_axis)
+    
     if x_axis == X_TIMESTEPS:
         x_var = np.cumsum(data_frame.l.values)
         y_var = data_frame.r.values
@@ -70,39 +70,13 @@ def ts2xy(data_frame: pd.DataFrame, x_axis: str) -> Tuple[np.ndarray, np.ndarray
     return x_var, y_var
 
 
-def plot_results(
-    dirs: List[str], num_timesteps: Optional[int], x_axis: str, task_name: str, figsize: Tuple[int, int] = (8, 2)
-) -> None:
-    """
-    Plot the results using csv files from ``Monitor`` wrapper.
-
-    :param dirs: the save location of the results to plot
-    :param num_timesteps: only plot the points below this value
-    :param x_axis: the axis for the x and y output
-        (can be X_TIMESTEPS='timesteps', X_EPISODES='episodes' or X_WALLTIME='walltime_hrs')
-    :param task_name: the title of the task to plot
-    :param figsize: Size of the figure (width, height)
-    """
-
-    data_frames = []
-    for folder in dirs:
-        data_frame = load_results(folder)
-        if num_timesteps is not None:
-            data_frame = data_frame[data_frame.l.cumsum() <= num_timesteps]
-        data_frames.append(data_frame)
-    data_frames1 = data_frames[:len(data_frames)//2]
-    data_frames2 = data_frames[len(data_frames)//2:]
-    xy_list = [ts2xy(data_frame, x_axis) for data_frame in data_frames1]
-    xy_list2 = [ts2xy(data_frame, x_axis) for data_frame in data_frames2]
-    plot_curves(xy_list, xy_list2, x_axis, task_name, figsize)
-
 def plot_trainingcurve_ub(
-    dirs: List[str], x_axis: str, num_timesteps: int = 25_000_000, task_name: str = "timesteps", figsize: Tuple[int, int] = (4, 3)
+    path: str, x_axis: str,  task_name: str, num_timesteps: int = 25_000_000, figsize: Tuple[int, int] = (4, 3)
 ) -> None:
     """
     Plot the results using csv files from ``Monitor`` wrapper.
 
-    :param dirs: the save location of the results to plot
+    :param path: location containing the monitor files (must be in the same directory/folder)
     :param num_timesteps: only plot the points below this value
     :param x_axis: the axis for the x and y output
         (can be X_TIMESTEPS='timesteps', X_EPISODES='episodes' or X_WALLTIME='walltime_hrs')
@@ -110,25 +84,16 @@ def plot_trainingcurve_ub(
     :param figsize: Size of the figure (width, height)
     """
 
-    #data_frames = []
-    for file in dirs:
-        data_frames, _=load_results(file)
-        """print(file)
-        data_frame = load_results(file)
-        if num_timesteps is not None:
-            data_frame = data_frame[data_frame.l.cumsum() <= num_timesteps]
-        data_frames.append(data_frame)"""
+    data_frames, _ = load_results(path)
     for data_frame in data_frames:
         data_frame = data_frame[data_frame.l.cumsum() <= num_timesteps]
-        print(len(data_frame))
-    print(len(data_frames))
     xy_list = [ts2xy(data_frame, x_axis) for data_frame in data_frames]
-    #plot_curves(xy_list, x_axis, task_name, figsize)
+    
     plt.figure(task_name, figsize=figsize)
     max_x = max(xy[0][-1] for xy in xy_list)
     min_x = 0
-    interpolated_y_means = []
     
+    interpolated_y_means = []
     for _, (x, y) in enumerate(xy_list):
         # Do not plot the smoothed curve at all if the timeseries is shorter than window size.
         if x.shape[0] >= EPISODES_WINDOW:
@@ -154,13 +119,14 @@ def plot_trainingcurve_ub(
     plt.tight_layout()
     plt.show()
 
-def plot_trainingcurve_subtasks(
-    dirs: List[str], num_timesteps: Optional[int], task_name: str, x_axis: str = "timesteps", figsize: Tuple[int, int] = (4, 3)
+
+def plot_trainingcurve_subtask(
+    path: str, task_name: str, x_axis: str = "timesteps", num_timesteps: int = 25_000_000, figsize: Tuple[int, int] = (4, 3)
 ) -> None:
     """
-    Plot the results using csv files from ``Monitor`` wrapper.
+    Plot the training data using csv files from ``Monitor`` wrapper.
 
-    :param dirs: the save location of the results to plot
+    :param path: location containing the monitor files (must be in the same directory/folder)
     :param num_timesteps: only plot the points below this value
     :param x_axis: the axis for the x and y output
         (can be X_TIMESTEPS='timesteps', X_EPISODES='episodes' or X_WALLTIME='walltime_hrs')
@@ -168,25 +134,16 @@ def plot_trainingcurve_subtasks(
     :param figsize: Size of the figure (width, height)
     """
 
-    for file in dirs:
-        data_frames, _=load_results(file)
-        """print(file)
-        data_frame = load_results(file)
-        if num_timesteps is not None:
-            data_frame = data_frame[data_frame.l.cumsum() <= num_timesteps]
-        data_frames.append(data_frame)"""
+    data_frames, _ = load_results(path)
     for data_frame in data_frames:
         data_frame = data_frame[data_frame.l.cumsum() <= num_timesteps]
-        print(len(data_frame))
-    print(len(data_frames))
+    
     xy_list = [ts2xy(data_frame, x_axis) for data_frame in data_frames]
-    print(xy_list[0][1])
-    #plot_curves(xy_list, x_axis, task_name, figsize)
     plt.figure(task_name, figsize=figsize)
     max_x = max(xy[0][-1] for xy in xy_list)
     min_x = 0
-    interpolated_y_means = []
     
+    interpolated_y_means = []
     for _, (x, y) in enumerate(xy_list):
         # Do not plot the smoothed curve at all if the timeseries is shorter than window size.
         if x.shape[0] >= EPISODES_WINDOW:
@@ -200,24 +157,28 @@ def plot_trainingcurve_subtasks(
     std_devs = np.std(np.vstack(interpolated_y_means), axis=0)
     plt.plot(xy_list[0][0], smoothed_y_mean, label='Mean Across All Models')
     plt.fill_between(xy_list[0][0], smoothed_y_mean - std_devs, smoothed_y_mean + std_devs, alpha=0.2, label='Std Across All Models')
-    smoothed_curves = []
 
+    smoothed_curves = []
     for _, (x, y) in enumerate(xy_list):
         if x.shape[0] >= EPISODES_WINDOW:
             # Compute and plot rolling mean with a window of size EPISODES_WINDOW
             x, y_mean = window_func(x, y, EPISODES_WINDOW, np.mean)
             interpolated_y_mean = np.interp(xy_list[0][0], x, y_mean)
             smoothed_y_mean = gaussian_filter1d(interpolated_y_mean, 600)
-
+            
             # Store the smoothed curve in the list
             smoothed_curves.append(smoothed_y_mean)
 
-    # order must be adjusted depending on the ranomd order the monitor files were drawn from
-    plt.plot(xy_list[0][0], smoothed_curves[1], label='FB_fruits01')
+    for curve in smoothed_curves:
+        plt.plot(xy_list[0][0], curve)
+
+    # order must be adjusted depending on the ranomd order the monitor files were drawn from, used to label individual models
+    """plt.plot(xy_list[0][0], smoothed_curves[1], label='FB_fruits01')
     plt.plot(xy_list[0][0], smoothed_curves[3], label='FB_fruits12')
     plt.plot(xy_list[0][0], smoothed_curves[4], label='FB_fruits23')
     plt.plot(xy_list[0][0], smoothed_curves[2], label='FB_fruits34')
-    plt.plot(xy_list[0][0], smoothed_curves[0], label='FB_fruits40')
+    plt.plot(xy_list[0][0], smoothed_curves[0], label='FB_fruits40')"""
+    
     plt.xlim(min_x, max_x)
     plt.title(task_name)
     custom_ticks = [0, 5_000_000, 10_000_000, 15_000_000, 20_000_000, 25_000_000]
@@ -230,5 +191,23 @@ def plot_trainingcurve_subtasks(
     plt.tight_layout()
     plt.show()
 
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--task_name', type=str, required=True, help='name of the task the models were trained on (displayed in the plot)')
+    parser.add_argument('--path', type=str, required=True, help='location of the monitor files (must be in same dir)')
+    parser.add_argument('--type', type=str, required=True, choices=['ub', 'subtask'], help='specifies whether to create plot for upper bound or for models trained on a sub-task')
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    if args.type == 'ub':
+        plot_trainingcurve_ub(path=args.path, num_timesteps=25_000_000, x_axis="timesteps", task_name=args.task_name)
+    else:
+        plot_trainingcurve_subtask(path=args.path, num_timesteps=25_000_000, x_axis="timesteps", task_name=args.task_name)
+
+
 if __name__=="__main__":
-    plot_trainingcurve_ub(dirs=["/home/beksi/projects/thesis/monitor/train/SP/UB"], num_timesteps=25000000, x_axis="timesteps", task_name="Starpilot")
+    main()

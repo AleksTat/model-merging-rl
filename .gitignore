@@ -1,3 +1,2 @@
-./__pycache__/
-./utils/__pycache__/
-./procgen-master
+*__pycache__/
+/procgen-master

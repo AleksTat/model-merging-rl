@@ -50,4 +50,4 @@ Commands are specific to linux terminal.
 
 # Reproduce
 The following lists every single step to (hopefully) reproduce our experiment results when merging models trained on the Starpilot sub-tasks using Git Re-Basin with alpha=0.5.
-1. `python train.py --env starpilot_dodge --seed_init 0 --seed_env 0 --model_path ./reproduce_models_starpilot/SP_dodge/SP_dodge00 --monitor_path
+1. `python train.py --env starpilot_dodge --seed_init 0 --seed_env 0 --model_path ./reproduce_models_starpilot/SP_dodge/SP_dodge00 --monitor_path TODO`

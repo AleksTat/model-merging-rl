@@ -1,32 +1,38 @@
-## Files
-- train.py: Used to train the models
-	- I used all these hyperparameters for every training run
-- merge.py: Used to merge models, either use gitrebasin or weight averaging
-	- Code for gitrebasin is inside /utils/gitrebasin.py
-- evaluate.py: Used to test models, spectate them or let a random agent play, specify which of those with the --mode argument
-	- I used num_episodes=5000 for my expirments, in on case I used =1000
-	- I used seed=5 always
-- plots_and_tableentries: Contains the files I used to plot training data (plot_training.py) and compute the mean return values etc. that I have in my tables (results_table.py)
-	- Very manual usage, changed which function to run by hand each time because I did this at the end and there was little time
-    - Requires a slight change in stable-baselines3 package code to work  	
-	- Uses most of stable-baselines3 stuff
-- procgen_games: Contains all procgen game files I used for the super-tasks and sub-tasks with my modifications
+# General information
+- Code for bachelor thesis "Continual Reinforcement Learning by Merging Models"
+- Use to reproduce the results or to conduct further experiments
+
+# Files
+## train.py
+- Trains models
+- Hyperparameters stayed the same for every training run in the thesis
+## merge.py
+- Merges two models, either by averaging their weights or by Git Re-Basin merging
+- Code for Git Re-Basin is inside /utils/gitrebasin.py
+## evaluate.py
+- Used to test models, spectate them or let a random agent play. Specify which of those with the --mode argument
+- num_episodes=5000 was used for experiments; in one case =1000 was used
+- seed=5 was used for all experiments
+## plot_training.py
+- Creates training plots of both UB and sub-task models
+## results.py
+- Computes the results (like mean returns) after testing a model with evaluate.py and saving the test data in a csv file
+- Writes the results in a new output file
+## test_merge.py
+- Tests the implementations of the different merging procedures
+- Currently not up to date!
+## procgen_games
+- Folder containing all procgen environments that were used as super-tasks and sub-tasks
+- The individual game files should be added to a local procgen installation (and registered, e.g. in cmake)
 - test_merge.py: Used this to confirm that my merging functions are functioning correctly, it is a bit messy right now and a lot of things are commented out. I also did other things to verify correct merging.
 
-## Models
-- Currently includes all my super-task and sub-task models, and all averaged models
-- Gitrebasin models will follow, they are many
+# Models
+## Starpilot
+- All super-task models (UB), sub-task models and merged models for which results are reported in the thesis can be found inside the models_starpilot folder
+## Fruitbot
+- All super-task models (UB), sub-task models and merged models for which results are reported in the thesis can be found inside the models_fruitbot folder
 
-## Requirements
-- gym 0.21.0
-- gym3 0.3.3
-- numpy 1.21.6
-- nvidia-cublas-cu11 11.10.3.66 
-- nvidia-cuda-nvrtc-cu11 11.7.99
-- nvidia-cuda-runtime-cu11 11.7.99
-- nvidia-cudnn-cu11 8.5.0.96              
-- procgen 0.10.7
-- python 3.7.16
-- scipy 1.7.3
-- stable baselines3 1.8.0
-- torch 1.13.1
+# Requirements
+- All requirements can be found in the environment.yml file. 
+- Procgen is included in the environment.yml file, but commented out. We recommend a manual installation from the official Git repository (https://github.com/openai/procgen). Installing Procgen manually by first downloading the repository makes it easier to insert our modified Procgen files.
+- **Cuda**: Cuda 11.7 was used for experiments with a RTX 3060, and the specific packages are included in the environment.yml file, but commented out. This is because your machine might require a different cuda version or different packages. You can try uncommenting and installing the same ones, and if that doesn't work you need to find out which cuda version you can use, if any. You could simply install cuda with pip after setting up the conda environment: python -m pip install cuda-python.

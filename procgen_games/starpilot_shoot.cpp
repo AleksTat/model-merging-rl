@@ -1,7 +1,7 @@
 #include "../basic-abstract-game.h"
 #include "../assetgen.h"
 
-const std::string NAME = "starpilotshoot";
+const std::string NAME = "starpilot_shoot";
 
 const float V_SCALE = 2.0f / 5.0f;
 

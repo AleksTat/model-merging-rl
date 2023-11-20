@@ -3,7 +3,7 @@
 #include <set>
 #include <queue>
 
-const std::string NAME = "fruitbot_veggies";
+const std::string NAME = "fruitbot_fruits";
 
 //const float SURVIVAL_BONUS = 0.01;
 const float COMPLETION_BONUS = 10.0;
@@ -23,13 +23,13 @@ const int KEY_DURATION = 8;
 
 const float DOOR_ASPECT_RATIO = 3.25;
 
-class FruitBotVeggiesGame : public BasicAbstractGame {
+class FruitBotFruitsGame : public BasicAbstractGame {
   public:
     float min_dim = 0.0f;
     float bullet_vscale = 0.0f;
     int last_fire_time = 0;
 
-    FruitBotVeggiesGame()
+    FruitBotFruitsGame()
         : BasicAbstractGame(NAME) {
         mixrate = .5;
         maxspeed = 0.85f;
@@ -278,4 +278,4 @@ class FruitBotVeggiesGame : public BasicAbstractGame {
     }
 };
 
-REGISTER_GAME(NAME, FruitBotVeggiesGame);
+REGISTER_GAME(NAME, FruitBotFruitsGame);

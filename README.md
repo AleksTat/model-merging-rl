@@ -33,6 +33,21 @@
 - All super-task models (UB), sub-task models and merged models for which results are reported in the thesis can be found inside the models_fruitbot folder
 
 # Requirements
-- All requirements can be found in the environment.yml file. 
+- All requirements can be found in the environment.yml file (you can use an alternative to conda). 
 - Procgen is included in the environment.yml file, but commented out. We recommend a manual installation from the official Git repository (https://github.com/openai/procgen). Installing Procgen manually by first downloading the repository makes it easier to insert our modified Procgen files.
-- **Cuda**: Cuda 11.7 was used for experiments with a RTX 3060, and the specific packages are included in the environment.yml file, but commented out. This is because your machine might require a different cuda version or different packages. You can try uncommenting and installing the same ones, and if that doesn't work you need to find out which cuda version you can use, if any. You could simply install cuda with pip after setting up the conda environment by running `python -m pip install cuda-python` inside your terminal.
+- **Cuda**: Cuda 11.7 was used for experiments with a RTX 3060, and the specific packages are included in the environment.yml file, but are commented out. This is because your machine might require a different cuda version or different packages. You can try uncommenting and installing the same ones, and if that doesn't work you need to find out which cuda version you can use, if any. You could simply install cuda with pip after setting up the conda environment by running `python -m pip install cuda-python` inside your terminal (after activating the conda environment). Cuda may also be installed by other dependencies without needing to uncomment it, so check this after conda environment creation.
+
+# Install
+Commands are specific to linux terminal.
+1. Download this repository and open it inside the terminal.
+2. Create conda environment: `conda env create -n crl-mm --file environment.yml
+3. Activate conda environment: `conda activate crl-mm`
+4. Install  cuda (*only if it is not already installed; check after creating conda environment*): `python -m pip install cuda-python`
+5. Download Procgen repository fom https://github.com/openai/procgen
+6. Open Procgen repository locally and insert our environment files from the procgen_games folder.
+7. Register the new Procgen environments and install Procgen inside the crl-mm conda environment.
+8. Open the crl-mm repository in your terminal, and run the files from there.
+
+# Reproduce
+The following lists every single step to (hopefully) reproduce our experiment results when merging models trained on the Starpilot sub-tasks using Git Re-Basin with alpha=0.5.
+1. `python train.py --env starpilot_dodge --seed_init 0 --seed_env 0 --model_path ./reproduce_models_starpilot/SP_dodge/SP_dodge00 --monitor_path

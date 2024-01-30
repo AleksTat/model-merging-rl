@@ -1,4 +1,4 @@
-name: crl-mm
+name: mm-rl
 channels:
   - conda-forge
   - defaults

@@ -54,7 +54,7 @@ def main():
                 tensorboard_log=tb_path,
                 verbose=1)
     #print(model.policy)#
-    for i in range(24_985_600):
+    for i in range(2525):
         model.learn(total_timesteps=16384)
         model.save(model_path)
 

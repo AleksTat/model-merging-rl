@@ -18,6 +18,7 @@ def parse_args():
     #parser.add_argument('--model_path', type=str, required=True, help='save location for model after training')
     #parser.add_argument('--monitor_path', type=str, required=True, help='save location for training data')
     parser.add_argument('--inter_param', type=float, required=True, help='interpolation parameter (alpha) used in the averaging process')
+    parser.add_argument('--merge_intervall', type=float, required=True, help='sets after how many parameter updates the models are merged')
     return parser.parse_args()
 
 
@@ -31,16 +32,17 @@ def main():
     #print('model_path:', args.model_path)
     #print('monitor_path:', args.monitor_path)
     print('inter_param:', args.inter_param)
+    print('merge_intervall:', args.merge_intervall)
     
     set_random_seed(args.seed_init, using_cuda=True)
     
-    TOTAL_STEPS=24_985_600
-    MERGE_INTERVALL=16384
+    TOTAL_UPDATES = 1530
+    MERGE_INTERVALL = args.merge_intervall
     # use same schema for logs and model save directory
     # monitor_path = './monitor/train/'+args.env+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
     # model_path = './models/'+str(args.env)+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
-    #tb_path_a = './tensorboard/'+str(args.env_a)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
-   # tb_path_b = './tensorboard/'+str(args.env_b)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
+    tb_path_a = './tensorboard/'+str(args.env_a)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
+    tb_path_b = './tensorboard/'+str(args.env_b)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
     model_path_a = './models/test1a'
     model_path_b = './models/test1b'
     monitor_path_a = './monitortest1_a'
@@ -65,7 +67,7 @@ def main():
                 gamma=0.999,
                 gae_lambda=0.95,
                 ent_coef=0.01,
-                #tensorboard_log=tb_path_a,
+                tensorboard_log=None,
                 verbose=1)
     
     model_b = PPO('CnnPolicy',
@@ -77,16 +79,23 @@ def main():
                 gamma=0.999,
                 gae_lambda=0.95,
                 ent_coef=0.01,
-               # tensorboard_log=tb_path_b,
+                tensorboard_log=None,
                 verbose=1)
     
-    for step in range(1, TOTAL_STEPS+1):
-        model_a.learn(total_timesteps=1)
-        model_b.learn(total_timesteps=1)
+    for step in range(1, TOTAL_UPDATES+1):
+        model_a.learn(total_timesteps=16384, reset_num_timesteps=False)
+        model_b.learn(total_timesteps=16384, reset_num_timesteps=False)
+        print('step:', step)
 
+        # Merge model parameters every MERGE_INTERVALL iterations
         if step % MERGE_INTERVALL == 0:
-            # Merge model parameters every MERGE_INTERVALL steps (parameters are updated every 16384 steps)
-            updated_params = gitrebasin(model_a.policy.state_dict(), model_b.policy.state_dict(), args.inter_param)
+            # Move parameters to cpu, then merge them, then move back to gpu and update models
+            model_a_policy_cpu = {k: v.cpu() for k, v in model_a.policy.state_dict().items()}
+            model_b_policy_cpu = {k: v.cpu() for k, v in model_b.policy.state_dict().items()}
+
+            updated_params_cpu = gitrebasin(model_a_policy_cpu, model_b_policy_cpu, args.inter_param)
+            updated_params = {k: v.cuda() for k, v in updated_params_cpu.items()}
+
             model_a.policy.load_state_dict(updated_params)
             model_b.policy.load_state_dict(updated_params)
 

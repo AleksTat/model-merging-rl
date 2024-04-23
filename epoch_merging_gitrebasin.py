@@ -13,7 +13,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env_a', type=str, required=True)
     parser.add_argument('--env_b', type=str, required=True)
-    parser.add_argument('--seed_init', type=int, required=True, help='seed for model weight initialization')
+    parser.add_argument('--seed_init_a', type=int, required=True, help='seed for model weight initialization')
+    parser.add_argument('--seed_init_b', type=int, required=True, help='seed for model weight initialization')
     parser.add_argument('--seed_env', type=int, required=True, help='seed for environment level generation')
     #parser.add_argument('--model_path', type=str, required=True, help='save location for model after training')
     #parser.add_argument('--monitor_path', type=str, required=True, help='save location for training data')
@@ -23,30 +24,30 @@ def parse_args():
 
 
 def main():
-    args = parse_args()
-    
+    args = parse_args() 
     print('env_a:', args.env_a)
     print('env_b:', args.env_b)
-    print('seed_init:', args.seed_init)
+    print('seed_init_a:', args.seed_init_a)
+    print('seed_init_b:', args.seed_init_b)
     print('seed_env:', args.seed_env)
     #print('model_path:', args.model_path)
     #print('monitor_path:', args.monitor_path)
     print('inter_param:', args.inter_param)
     print('merge_intervall:', args.merge_intervall)
     
-    set_random_seed(args.seed_init, using_cuda=True)
+    set_random_seed(args.seed_init_a, using_cuda=True)
     
     TOTAL_UPDATES = 1530
     MERGE_INTERVALL = args.merge_intervall
     # use same schema for logs and model save directory
     # monitor_path = './monitor/train/'+args.env+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
     # model_path = './models/'+str(args.env)+'_'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
-    tb_path_a = './tensorboard/'+str(args.env_a)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
-    tb_path_b = './tensorboard/'+str(args.env_b)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
-    model_path_a = './models/test1a'
-    model_path_b = './models/test1b'
-    monitor_path_a = './monitortest1_a'
-    monitor_path_b = './monitortest1_b'
+    #tb_path_a = './tensorboard/'+str(args.env_a)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
+   # tb_path_b = './tensorboard/'+str(args.env_b)+'/'+'init'+str(args.seed_init)+'_'+'env'+str(args.seed_env)
+    model_path_a = './models/starpilotdodge1'
+    model_path_b = './models/starpilotshoot2'
+    monitor_path_a = './starpilotdodge1'
+    monitor_path_b = './starpilotshoot2'
 
     venv_a = ProcgenEnv(num_envs=64, env_name=args.env_a, distribution_mode='easy', num_levels=0, use_sequential_levels=False, 
                         restrict_themes=False, rand_seed=args.seed_env, use_backgrounds=False)

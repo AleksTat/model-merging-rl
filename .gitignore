@@ -1,3 +1,7 @@
 *__pycache__/
 /procgen-master
 /.vscode
+/monitor
+/models
+/tensorboard
+exptest.py

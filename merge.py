@@ -24,10 +24,10 @@ def weight_averaging(params_a, params_b, inter_param):
     return averaged_state_dict
 
 
-def gitrebasin(params_a, params_b, inter_param):
+def gitrebasin(params_a, params_b, inter_param, output_file):
     permutation_spec = naturecnn_permutation_spec()
     final_permutation = weight_matching(permutation_spec,
-                                        params_a, params_b)
+                                        params_a, params_b, output_file=output_file)
     updated_params = apply_permutation(permutation_spec, final_permutation, params_b)
 
     layers = ["pi_features_extractor", "vf_features_extractor"]
@@ -49,6 +49,7 @@ def parse_args():
     parser.add_argument('--procedure', type=str, required=True, choices=['avg', 'gitrebasin'], help='specifies merging procedure to merge models a and b')
     parser.add_argument('--save_path', type=str, required=True, help='save location for merged model')
     parser.add_argument('--inter_param', type=float, required=True, help='interpolation parameter (alpha) used in the averaging process')
+    parser.add_argument('--gitrebasin_log', type=str, required=False, help='txt file where to save gitrebasin permutation data')
     return parser.parse_args()
 
 
@@ -70,7 +71,7 @@ def main():
     if args.procedure == 'avg':
         updated_params = weight_averaging(params_a, params_b, args.inter_param)
     else:
-        updated_params = gitrebasin(params_a, params_b, args.inter_param)
+        updated_params = gitrebasin(params_a, params_b, args.inter_param, output_file=args.gitrebasin_log)
 
     model_b.policy.load_state_dict(updated_params)
     print('saving model to:', args.save_path)

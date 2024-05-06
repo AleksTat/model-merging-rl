@@ -1,8 +1,6 @@
 import subprocess
 
-# Commands to run
-commands = [
-    ('python train.py --do train_and_merge --total_steps 24_576_000 --merge_intervall 10 --procedure gitrebasin --inter_param 0.5 ' 
+"""('python train.py --do train_and_merge --total_steps 24_576_000 --merge_intervall 10 --procedure gitrebasin --inter_param 0.5 ' 
     '--env_a spdodge --seed_init_a 0 --seed_env_a 0 '
     '--env_b spshoot --seed_init_b 1 --seed_env_b 2 '
     '--monitor_dir ./monitor/SP/train/TM/gitrebasin/diff_init '
@@ -28,8 +26,10 @@ commands = [
     '--env_b spshoot --seed_init_b 1 --seed_env_b 2 '
     '--monitor_dir ./monitor/SP/train/TM/gitrebasin/diff_init '
     '--tensorboard_dir SP/TM/gitrebasin/diff_init '
-    '--model_save_dir ./models/SP/merged/TM/gitrebasin/diff_init'),
+    '--model_save_dir ./models/SP/merged/TM/gitrebasin/diff_init'),"""
 
+# Commands to run
+commands = [
     ('python train.py --do train_and_merge --total_steps 24_576_000 --merge_intervall 10 --procedure avg --inter_param 0.5 ' 
     '--env_a spdodge --seed_init_a 0 --seed_env_a 0 '
     '--env_b spshoot --seed_init_b 1 --seed_env_b 2 '

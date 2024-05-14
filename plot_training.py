@@ -1,3 +1,10 @@
+"""
+Most of the code taken from https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/results_plotter.py
+This file contains implementation to create matplotlib plots from monitor.csv files.
+Was used to create training graph plots. 
+Currently unmaintained and probably needs (minimal) adjustments for further usage.
+"""
+
 import argparse
 from typing import Callable, List, Optional, Tuple
 

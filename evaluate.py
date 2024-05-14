@@ -1,3 +1,8 @@
+"""
+This file is used to evaluate a trained/merged model on a specific environment.
+It's possible to either spectate the model play or to make it run for some episodes and monitor the data.
+"""
+
 from procgen import ProcgenEnv
 import numpy as np
 import argparse
@@ -75,11 +80,11 @@ def test(env, num_episodes, seed, model, logdir):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--env', type=str, required=True)
-    parser.add_argument('--num_episodes', type=int, required=True, help='specifies number of episodes to evaluate model (5000 used in thesis)')
-    parser.add_argument('--seed', type=int, required=True, help='used for libraries and level generation')
+    parser.add_argument('--num_episodes', type=int, required=True, help='specifies number of episodes to evaluate model')
+    parser.add_argument('--seed', type=int, required=True, help='used for libraries and env level generation')
     parser.add_argument('--mode', default='spectate', type=str, required=True, choices=['spectate', 'test', 'random'], help='spectate: watch model play; test: test model and save data; random: create and save data for random agent')
     parser.add_argument('--model', type=str, help='path to model to be evaluated (not required when evaluating random agent)')
-    parser.add_argument('--logdir', type=str, help='save location for test data when using modes test or random')
+    parser.add_argument('--logdir', type=str, help='save location for test data (monitor.csv file) when using modes test or random')
     return parser.parse_args()
 
 
@@ -99,7 +104,7 @@ def main():
     elif args.mode == 'test':
         print('saving monitor file in:', args.logdir)
         test(args.env, args.num_episodes, args.seed, args.model, args.logdir)
-    else:
+    elif args.mode == 'random':
         print('saving monitor file in:', args.logdir)
         test_random_agent(args.env, args.num_episodes, args.seed, args.logdir)
 

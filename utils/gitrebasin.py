@@ -1,6 +1,8 @@
 """
+This code implements Git Re-Basin merging and is used in merge.py
 Almost all of the code is taken from https://github.com/themrzmaster/git-re-basin-pytorch
-Important modification is in lines 56-59
+Check the above link for more code and better understanding
+Important modification is in lines 56-60
 """
 import copy
 import os
@@ -23,10 +25,12 @@ def permutation_spec_from_axes_to_perm(axes_to_perm: dict) -> PermutationSpec:
         perm_to_axes[perm].append((wk, axis))
   return PermutationSpec(perm_to_axes=dict(perm_to_axes), axes_to_perm=axes_to_perm)
 
-
+# this function is added by us and allows us to use Git Re-Basin with our specific model architecture
+# if a new model architecture is to be used, a new function similar to this one needs to be created
 def naturecnn_permutation_spec() -> PermutationSpec:
-    conv = lambda name, p_in, p_out: {f"{name}.weight": (p_out, p_in, None, None), f"{name}.bias": (p_out, None)}
-    dense = lambda name, p_in, p_out, bias=True: {f"{name}.weight": (p_out, p_in), f"{name}.bias": (p_out, )} if bias else {f"{name}.weight": (p_out, p_in)}
+    # automatic way to create the permutation spec, currently unused
+    """conv = lambda name, p_in, p_out: {f"{name}.weight": (p_out, p_in, None, None), f"{name}.bias": (p_out, None)}
+    dense = lambda name, p_in, p_out, bias=True: {f"{name}.weight": (p_out, p_in), f"{name}.bias": (p_out, )} if bias else {f"{name}.weight": (p_out, p_in)}"""
 
     return permutation_spec_from_axes_to_perm(
     {'features_extractor.cnn.0.weight': ('P_bg0_cnn', None, None, None),
@@ -96,6 +100,8 @@ def weight_matching(ps: PermutationSpec, params_a, params_b, output_file, max_it
         assert (torch.tensor(ri) == torch.arange(len(ri))).all()
         oldL = torch.einsum('ij,ij->i', A, torch.eye(n)[perm[p].long()]).sum()
         newL = torch.einsum('ij,ij->i', A, torch.eye(n)[ci, :]).sum()
+        print(f"{iteration}/{p}: {newL - oldL}")
+        # write permutation difference to given output file
         file.write(f"{iteration}/{p}: {newL - oldL}\n")
         progress = progress or newL > oldL + 1e-12
 

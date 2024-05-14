@@ -1,6 +1,22 @@
+"""
+This file contains the merging procedures, currently Git Re-Basin and Weight Averaging.
+The file can be used individually to merge models but the procedures are also used by other files.
+"""
+
 import argparse
 from stable_baselines3 import PPO
 from utils.gitrebasin import naturecnn_permutation_spec, apply_permutation, weight_matching
+import os
+
+def create_file(file_path):
+    # Ensure the directory structure exists
+    directory = os.path.dirname(file_path)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
+    
+    # Create the file
+    with open(file_path, 'w') as file:
+        pass
 
 
 def weight_averaging(params_a, params_b, inter_param):
@@ -32,6 +48,7 @@ def gitrebasin(params_a, params_b, inter_param, output_file):
 
     layers = ["pi_features_extractor", "vf_features_extractor"]
     sublayers = ["cnn.0", "cnn.2", "cnn.4", "linear.0"]
+
     # Adjusting all features_extractor layers in sb3 unique model architecture
     for layer in layers:
         for sublayer in sublayers:
@@ -70,11 +87,13 @@ def main():
 
     if args.procedure == 'avg':
         updated_params = weight_averaging(params_a, params_b, args.inter_param)
-    else:
+    elif args.procedure == 'gitrebsin':
+        # create given file for gitrebasin output if it doesn't exist already
+        create_file(args.gitrebasin_log)
         updated_params = gitrebasin(params_a, params_b, args.inter_param, output_file=args.gitrebasin_log)
 
     model_b.policy.load_state_dict(updated_params)
-    print('saving model to:', args.save_path)
+    print('saving merged model to:', args.save_path)
     model_b.save(args.save_path)
 
 

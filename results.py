@@ -1,3 +1,7 @@
+"""
+This file is used to calculate mean/std returns and episode lengths given a directory containing monitor files.
+"""
+
 import argparse
 import numpy as np
 from utils.monitor import load_results
@@ -79,16 +83,19 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, required=True, help='location of the monitor files (must be in same dir)')
     parser.add_argument('--output_file', type=str, required=True, help='path/name of the output file to write the results in')
-    parser.add_argument('--type', default='return', type=str, choices=['return', 'length'], help='specifies whether to write episode returns or episode lengths')
+    parser.add_argument('--type', required=True, default='return', type=str, choices=['return', 'length'], 
+                        help='specifies whether to write episode returns or episode lengths')
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
 
+    # Given a directory containing monitor files, the functions take all monitor files there and compute 
+    # mean/stds epsiode returns or lengths of ALL monitor files in the path, so make sure it's the ones you want to have evaluated together
     if args.type == 'return':
         save_returns_to_file(path=args.path, output_file=args.output_file)
-    else:
+    elif args.type == 'length':
         save_lengths_to_file(path=args.path, output_file=args.output_file)
 
 

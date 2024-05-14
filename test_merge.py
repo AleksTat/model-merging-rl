@@ -1,4 +1,8 @@
-# FILE NOT FINISHED
+"""
+FILE NOT FINISHED.
+Was used to verify correctness of Git Re-Basin and Weight Averaging implementation in merge.py
+Current status is unmaintained and needs to be modified for specific needs
+"""
 
 import argparse
 from stable_baselines3 import PPO

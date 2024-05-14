@@ -1,6 +1,8 @@
 """
+This file is used for creating results data from monitor files. In particular used by results.py
 Code is taken from https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/common/monitor.py,
 with slight modifications
+Check it out for further understanding.
 """
 
 __all__ = ["Monitor", "ResultsWriter", "get_monitor_files", "load_results"]

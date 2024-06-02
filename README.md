@@ -3,6 +3,7 @@
 - The used model architecture and hyperparameters are crucial for the code to work, if one wants to modify any of the two, the code will need further modifications
 - Always same settings for Procgen environments are used: easy, no background, and 64 instances in parallel
 - Genereally, most Parser arguments are self explanatory but there is help information written for almost all of them to clarify their purpose
+- The pdf file is my bachelor thesis, which was the beginning of this project. It might serve as a useful introduction and provide useful sources
 
 # Files
 ## train.py

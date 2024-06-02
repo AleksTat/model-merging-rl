@@ -27,18 +27,20 @@ def parse_args():
     parser.add_argument('--model_save_dir', type=str, required=True,
                         help='save location for the model after training or merging (always only saving one model)')
     parser.add_argument('--monitor_dir', type=str, required=True, help='save location for training data of the first model')
-    parser.add_argument('--tensorboard_dir', type=str, required=True, help='save location for tensorboard files')
+    parser.add_argument('--tb_dir', type=str, required=True, help='save location for tensorboard files')
     parser.add_argument('--total_steps', type=int, required=True, default=25_000_000, help='total timesteps for training')
     parser.add_argument('--merge_intervall', type=int, required=False, help='defines how many times parameters are updated before merging')
     parser.add_argument('--procedure', type=str, required=False, choices=['avg', 'gitrebasin'],
                         help='which merging procedure to use. possible only (avg, gitrebasin)')
     parser.add_argument('--inter_param', type=float, required=False, help='interpolation parameter for the merging')
-    parser.add_argument('--model_b_path', type=str, required=False, help='save location for tensorboard files')
-    parser.add_argument('--model_b_name', type=str, required=False, help='save location for tensorboard files')
+    parser.add_argument('--model_b_path', type=str, required=False, 
+                        help='path to a folder that contains model and checkpoints that is used in checkpoint merging')
+    parser.add_argument('--model_b_name', type=str, required=False, 
+                        help='giving name of model_b for checkpoint merging so that appropriate filename can be created for merged model later')
     return parser.parse_args()
 
-
-def train_and_merge(total_steps, merge_intervall, procedure, inter_param, env_a, env_b, seed_init_a, seed_init_b, 
+# train and merge two models simultaneously
+def federated(total_steps, merge_intervall, procedure, inter_param, env_a, env_b, seed_init_a, seed_init_b, 
                     seed_env_a, seed_env_b, monitor_dir, tb_dir, model_save_dir):
     # 16384 is the n_steps (256) hyperparam times the environment instances (64), 
     # will use variables for this later but for now has to be this way
@@ -207,6 +209,8 @@ def chp_merge(total_steps, merge_intervall, procedure, inter_param, env_a, seed_
 
         # Merge model parameters every merge_intervall iterations (optimizers are never merged!)
         if update % merge_intervall == 0:
+            # this assumes model b is saved with all its checkpoints in one folder and we merge with corresponding checkpoint to current update
+            # can be modified to only merge with end model weights of model_b
             model_b_file = model_b_path + f'{update}.zip'
             print('model_b_file:', model_b_file)
             # env is not important here, so just using model_a's
@@ -239,15 +243,16 @@ def chp_merge(total_steps, merge_intervall, procedure, inter_param, env_a, seed_
 def main():
     args = parse_args()
     
-    if args.do == 'train_and_merge':
-        train_and_merge(total_steps=args.total_steps, merge_intervall=args.merge_intervall, procedure=args.procedure,  
+    if args.do == 'federated':
+        federated(total_steps=args.total_steps, merge_intervall=args.merge_intervall, procedure=args.procedure,  
                         inter_param=args.inter_param, env_a=args.env_a, env_b=args.env_b, seed_init_a=args.seed_init_a,  
                         seed_init_b=args.seed_init_b, seed_env_a=args.seed_env_a, seed_env_b=args.seed_env_b, 
-                        monitor_dir=args.monitor_dir, tb_dir=args.tensorboard_dir, model_save_dir=args.model_save_dir)
+                        monitor_dir=args.monitor_dir, tb_dir=args.tb_dir, model_save_dir=args.model_save_dir)
         
-    else: chp_merge(total_steps=args.total_steps, merge_intervall=args.merge_intervall, procedure=args.procedure,  
+    elif args.do == 'chp_merge': 
+        chp_merge(total_steps=args.total_steps, merge_intervall=args.merge_intervall, procedure=args.procedure,  
                     inter_param=args.inter_param, env_a=args.env_a, seed_init_a=args.seed_init_a, seed_env_a=args.seed_env_a, 
-                    monitor_dir=args.monitor_dir, tb_dir=args.tensorboard_dir, model_save_dir=args.model_save_dir,
+                    monitor_dir=args.monitor_dir, tb_dir=args.tb_dir, model_save_dir=args.model_save_dir,
                     model_b_path=args.model_b_path, model_b_name=args.model_b_name)
     return 1
 

@@ -1,9 +1,8 @@
 # General information
 - Code for merging models in RL, specifically models trained on Procgen environments
-- Use to reproduce the results or to conduct further experiments
 - The used model architecture and hyperparameters are crucial for the code to work, if one wants to modify any of the two, the code will need further modifications
 - Always same settings for Procgen environments are used: easy, no background, and 64 instances in parallel
-- Genereally, most Parser arguments are self explanatory but there is help information written for almost all of them to clarify the purpose
+- Genereally, most Parser arguments are self explanatory but there is help information written for almost all of them to clarify their purpose
 
 # Files
 ## train.py
